@@ -1,6 +1,6 @@
 # FieldRota-AI
 **Track:** Climate  
-**Team:** *names (add before submitting)*
+**Team:** İstikbalin Cezerileri
 
 **Live app:** https://mensar10.github.io/fieldrota-ai/app/ (section 5 is the AI planner)  
 **Notebook with all results:** [open in Colab](https://colab.research.google.com/github/Mensar10/fieldrota-ai/blob/main/FieldRota_AI.ipynb)
