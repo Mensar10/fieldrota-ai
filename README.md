@@ -6,7 +6,12 @@
 **Notebook with all results:** [open in Colab](https://colab.research.google.com/github/Mensar10/fieldrota-ai/blob/main/FieldRota_AI.ipynb)
 
 # The problem
-On the Konya Plain in Türkiye, irrigation wells are draining the aquifer faster than rain can refill it. NASA's GRACE satellites see the basin losing water every year, and hundreds of sinkholes have opened. Konya's 2027 planting rules (Çumra district) take sugar beet off the list and stop thirsty crops from following each other. That leaves a farmer with one question every autumn: *what do I plant next on this field, so that I pump less water now and in a hotter future?*
+On the Konya Plain in Türkiye, irrigation wells are draining the aquifer faster than rain can refill it. NASA's GRACE satellites see the basin losing water every year, and hundreds of sinkholes have opened. Konya's new 2027 planting rules for irrigated land in the Çumra district say:
+* only crops on the district's list may be planted, and sugar beet is no longer on it;
+* a field needs at least three different crops in rotation;
+* water-hungry crops (grain maize, potato, alfalfa, sugar beet) may not follow each other or come more than twice in four years.
+
+That leaves a farmer with one question every autumn: *what do I plant next on this field, so that I pump less water now and in a hotter future?*
 
 # What we built
 **User:** a farmer with an irrigated field near Çumra, Konya, in the autumn when they choose next season's crop.
