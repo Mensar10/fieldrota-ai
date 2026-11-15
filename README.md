@@ -59,6 +59,13 @@ It lives in our web app, FieldRota. The farmer finds the field on a satellite ma
 
 </details>
 
+## How it fits the AI + Climate track
+
+* **One place, one user, one decision.** Irrigated fields in Çumra, on the Konya Plain. The user is the farmer, and the decision is which crop to sow each autumn.
+* **Adapting farming to a changing climate.** The planner is trained and tested on NASA CMIP6 climate projections up to 2060, so its advice is built for hotter summers. Where the climate shift matters, it changes crops over the decades, as it does in Kansas.
+* **Cutting the climate impact of irrigation.** Pumping groundwater from deep wells takes electricity. At the 1.03 kWh per m³ measured on Çumra's deep wells (Topak et al., 2008), the 220–250 m³ of water saved per decare means about 225–255 kWh less electricity per decare every year (simulated). The plans also bring in legumes such as vetch, which leave nitrogen in the soil for the next crop and reduce the need for synthetic fertiliser.
+* **A fair test.** We train on earlier years and test on later ones, never shuffling them, and compare with the persistence baseline the track asks for: next year's crops stay the same as this year's.
+
 ## What is new
 
 This is our own idea, not a suggested project. Reinforcement learning has been used for crop planning in research simulators before (for example CyclesGym, NeurIPS 2022). What we add:
@@ -97,7 +104,7 @@ This is our own idea, not a suggested project. Reinforcement learning has been u
 * **Unseen real weather:** 2015–2025, real-weather agent.
 * **Unseen climate models:** 2026–2060 under GFDL-ESM4 and IPSL-CM6A-LR, climate-model agent. These futures reuse real 1986–2025 weather swings, so this test checks new warming trends, not new weather.
 * **Four comparisons:**
-  * **Today's rotation** (maize → wheat → sugar beet): the farmer changes nothing.
+  * **Today's rotation** (maize → wheat → sugar beet): the persistence baseline, where the farmer changes nothing.
   * **Myopic:** picks the best crop for this year only.
   * **FieldRota v1:** the best fixed 3-year rotation for the average climate.
   * **Exact optimum:** dynamic programming on the expected yearly score of the test climate models, our reference ceiling.
