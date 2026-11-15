@@ -992,7 +992,7 @@ mInit();
 
 /* ---------------- FieldRota-AI: learned rotation policy (reinforcement learning) ---------------- */
 Object.assign(T.en,{
-  rlT:"FieldRota-AI: a planner that learned from real weather",
+  rlT:"FieldRota-AI: a planner that learned from NASA weather and climate models",
   rlH:"A reinforcement-learning agent practised on this field for millions of virtual seasons under three NASA CMIP6 climate models for 2026–2060 (each future year = the model's warming trend plus the ups and downs of a real 1986–2025 NASA POWER year). Every year it looks at the last two crops in the field and the decade, then picks the next crop for your goal. The 2026–2060 test below uses two climate models it never trained on; the 2015–2025 columns come from a twin agent trained only on 1986–2008 weather (it looks at last year's rainfall instead of the decade).",
   rlPlanT:(a,b)=>`The AI's plan for your field (last crops: ${a} → ${b})`,
   rlStrip:"2027 → 2060, one block per year",
@@ -1002,7 +1002,7 @@ Object.assign(T.en,{
   rlTestT:"Tested on data it never saw",
   rlCols:["Plan","Real weather 2015–2025: score","well water (m³/da/yr)","2026–2060, 2 unseen climate models: score","well water (m³/da/yr)","bad year (5th pct.)"],
   rlRows:{ai:"FieldRota-AI (learned policy)",v1:"FieldRota v1 (best fixed 3-year rotation)",farm:"Farmers' common rotation",my:"Myopic (best crop for this year only)"},
-  rlFoot:(opt,pct)=>`Score = FieldRota's score for the selected goal (water, soil and climate fit, up to 100), averaged per year; it can fall below 0 when a plan needs more well water than the region's thirstiest crop. Best possible on the unseen climate models, worked out exactly with dynamic programming: <b>${opt}</b>. The AI reaches <b>${pct}%</b> of it.`,
+  rlFoot:(opt,pct)=>`Score = FieldRota's score for the selected goal (water, soil and climate fit, up to 100), averaged per year; it can fall below 0 when a plan needs more well water than the region's thirstiest crop. Exact optimum of the expected score on the unseen climate models (dynamic programming): <b>${opt}</b>. The AI reaches <b>${pct}%</b> of it.`,
   rlWorse:(h,f)=>`<b>Honest note:</b> here the simple v1 search does better than the AI${h?` on the real 2015–2025 weather (by ${h} points)`:""}${h&&f?" and":""}${f?` on the unseen climate models (by ${f} points)`:""}. The AI learns from single noisy weather years and starts from your real field history; v1 assumes you are already in its rotation and scores rotations with average climate.`,
   rlBetter:(d)=>`Here the AI scores up to ${d} points above v1 on data it never saw, by starting from your field's real history and changing crops as the decades warm.`,
   rlTie:"The AI and v1 land on almost the same answer: two very different methods agree, which makes the suggestion more trustworthy.",
@@ -1011,7 +1011,7 @@ Object.assign(T.en,{
   rlHow:`<ul><li><b>Method:</b> tabular Q-learning. State = the two previous crops + the decade (training on CMIP6 futures) or last year's rainfall (training on past weather). Action = next crop, limited to FieldRota's rules (crop list, three different crops in any three years, no two high-water crops in a row in Konya, sowing and harvest must not overlap).</li><li><b>Reward:</b> FieldRota's own yearly score: well water, climate fit and soil health, weighted by your goal.</li><li><b>Simulator:</b> FieldRota's calibrated crop numbers, made year-by-year with real NASA POWER weather (ET₀, rainfall, days ≥ 35 °C in each crop's most sensitive month). Future years follow each CMIP6 model's trend to 2041–2060 plus the ups and downs of a real past year.</li><li><b>Test:</b> trained on 1986–2008 and 3 climate models; the best of 3 training runs is chosen on 2009–2014 and a 4th model (MRI-ESM2-0); tested on 2015–2025 and 2 more models it never saw (GFDL-ESM4, IPSL-CM6A-LR).</li><li><b>Limits:</b> yields are not simulated directly (climate fit stands in for them); one field and one main crop per year; soil-moisture carry-over and pests are not modelled; prices are not in the score.</li></ul>`
 });
 Object.assign(T.tr,{
-  rlT:"FieldRota-AI: gerçek hava verisinden öğrenen planlayıcı",
+  rlT:"FieldRota-AI: NASA hava verisi ve iklim modelleriyle öğrenen planlayıcı",
   rlH:"Pekiştirmeli öğrenme ajanı bu tarlada 2026–2060 için üç NASA CMIP6 iklim modeli altında milyonlarca sanal sezon denedi (her gelecek yıl = modelin ısınma eğilimi + 1986–2025 arasındaki gerçek bir NASA POWER yılının iniş çıkışları). Her yıl tarladaki son iki ürüne ve hangi on yılda olduğuna bakıp hedefinize göre sıradaki ürünü seçiyor. Aşağıdaki 2026–2060 testi, eğitimde hiç kullanılmayan iki iklim modeliyle yapıldı; 2015–2025 sütunları yalnızca 1986–2008 havasıyla eğitilen ikiz ajandan geliyor (on yıl yerine geçen yılın yağışına bakıyor).",
   rlPlanT:(a,b)=>`Yapay zekânın tarlanız için planı (son ürünler: ${a} → ${b})`,
   rlStrip:"2027 → 2060, her blok bir yıl",
@@ -1021,7 +1021,7 @@ Object.assign(T.tr,{
   rlTestT:"Hiç görmediği verilerle test",
   rlCols:["Plan","Gerçek hava 2015–2025: puan","kuyu suyu (m³/da/yıl)","2026–2060, görmediği 2 iklim modeli: puan","kuyu suyu (m³/da/yıl)","kötü yıl (%5'lik dilim)"],
   rlRows:{ai:"FieldRota-AI (öğrenilmiş politika)",v1:"FieldRota v1 (en iyi sabit 3 yıllık nöbet)",farm:"Çiftçilerin yaygın nöbeti",my:"Miyop (yalnızca bu yılın en iyisi)"},
-  rlFoot:(opt,pct)=>`Puan = seçtiğiniz hedef için FieldRota'nın puanı (su, toprak ve iklim uyumu, en fazla 100), yıllık ortalama; plan bölgenin en çok su isteyen ürününden fazla kuyu suyu gerektirirse 0'ın altına inebilir. Görmediği iklim modellerinde mümkün olan en iyi plan, dinamik programlamayla tam olarak hesaplandı: <b>${opt}</b>. Yapay zekâ bunun <b>%${pct}</b>'ine ulaşıyor.`,
+  rlFoot:(opt,pct)=>`Puan = seçtiğiniz hedef için FieldRota'nın puanı (su, toprak ve iklim uyumu, en fazla 100), yıllık ortalama; plan bölgenin en çok su isteyen ürününden fazla kuyu suyu gerektirirse 0'ın altına inebilir. Görmediği iklim modellerinde beklenen puanın tam optimumu (dinamik programlama): <b>${opt}</b>. Yapay zekâ bunun <b>%${pct}</b>'ine ulaşıyor.`,
   rlWorse:(h,f)=>`<b>Dürüst not:</b> burada basit v1 araması yapay zekâdan daha iyi sonuç veriyor${h?`: gerçek 2015–2025 havasında ${h} puan`:""}${h&&f?",":""}${f?`${h?"":":"} görmediği iklim modellerinde ${f} puan`:""}. Yapay zekâ tek tek, gürültülü hava yıllarından öğreniyor ve tarlanızın gerçek geçmişinden başlıyor; v1 ise zaten kendi nöbetinizde olduğunuzu varsayıyor ve nöbetleri ortalama iklimle puanlıyor.`,
   rlBetter:(d)=>`Burada yapay zekâ görmediği verilerde v1'den ${d} puana kadar yukarıda: tarlanızın gerçek geçmişinden başlıyor ve on yıllar ısındıkça ürün değiştiriyor.`,
   rlTie:"Yapay zekâ ve v1 neredeyse aynı cevaba varıyor: birbirinden çok farklı iki yöntemin aynı sonucu bulması öneriyi daha güvenilir kılıyor.",

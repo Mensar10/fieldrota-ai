@@ -4,7 +4,7 @@
 
 **Track:** Climate · Veritas AI International High School Hackathon 2026
 
-**[▶ Live app](https://mensar10.github.io/fieldrota-ai/app/)** (section 5 is the AI planner) · **[Notebook in Colab](https://colab.research.google.com/github/Mensar10/fieldrota-ai/blob/main/FieldRota_AI.ipynb)** (all tests, about 5 minutes) · **[Technical details](DETAILS.md)**
+**[▶ Demo video (2 min)](https://youtu.be/iyL9VEknNFA)** · **[Live app](https://mensar10.github.io/fieldrota-ai/app/)** (section 5 is the AI planner) · **[Notebook in Colab](https://colab.research.google.com/github/Mensar10/fieldrota-ai/blob/main/FieldRota_AI.ipynb)** (all tests, about 5 minutes) · **[Technical details](DETAILS.md)**
 
 > **In one line:** FieldRota-AI tells a farmer on Türkiye's Konya Plain what to plant every year until 2060. In our simulator, on weather years and climate models it never trained on, its plan follows the new 2027 rules and pumps **45–48 % less groundwater** than today's rotation, matching the exact optimum on the unseen climate models. At today's prices the water-saving plan earns less; we show that trade-off openly, with our plan to fix it.
 >
@@ -12,6 +12,9 @@
 
 ![FieldRota-AI in the app: the agent's plan for a Konya field and its test on data it never trained on](docs/img/app_05_ai_konya_water.jpg)
 *Section 5 of the app. The farmer's field last grew wheat, then sugar beet. The agent plans barley → canola → vetch until 2060, and the table shows how it did on years and climate models it did not train on.*
+
+[![Watch the 2-minute demo video](docs/img/video_thumb.jpg)](https://youtu.be/iyL9VEknNFA)
+*The 2-minute demo: the problem, the app, the AI's plan, the honest test and where it falls short. Click to watch on YouTube.*
 
 ---
 
@@ -63,7 +66,7 @@ This is our own idea, not a suggested project. Reinforcement learning has been u
 * **Real rules as hard limits.** The agent can never pick a move that breaks Konya's 2027 rules.
 * **Real weather and real climate futures.** 41 years of NASA POWER weather and 6 NASA CMIP6 climate models drive the simulator.
 * **An honest test.** The agent is tested on years and climate models it did not train on.
-* **An exact referee.** We compute the best possible plan with dynamic programming and measure how close the agent gets.
+* **An exact referee.** We compute the exact optimum of the expected score with dynamic programming and measure how close the agent gets.
 
 ## How it works
 
@@ -82,14 +85,14 @@ This is our own idea, not a suggested project. Reinforcement learning has been u
   * **Climate-model agent (the one in the app):** also sees the decade. Trained on 2026–2060 futures from 3 climate models (each future year = the model's warming trend plus the weather swings of a real 1986–2025 year), best of 3 runs picked on a 4th model, tested on 2 others.
 
 ![Learning curve of the climate-model agent for Konya](docs/img/chart_learning_curve.png)
-*The climate-model agent's average yearly score while it practises. It starts near 44 while it is still trying moves almost at random, and levels off just below the exact optimum on its training models (70.7); part of the gap is the exploration it keeps doing during training.*
+*The climate-model agent's average yearly score while it practises. It starts near 44 while it is still trying moves almost at random, and levels off about 3 points below the exact optimum on its training models (70.7); much of that gap is the exploration it keeps doing while training. The tests below use the finished policy, with no exploration.*
 
-**Why reinforcement learning?** This year's crop changes what is best next year, and the climate keeps shifting, so a rotation is a chain of decisions. Our simulator is still small enough to solve exactly with dynamic programming, so we use that as a referee. Q-learning only needs to try moves, which is our route to adding forecasts, soil moisture or prices later.
+**Why reinforcement learning?** This year's crop changes what is best next year, and the climate keeps shifting, so a rotation is a chain of decisions. Today's simulator is small enough for dynamic programming to solve exactly, so DP is our referee, not our product. Q-learning needs no model of how the field responds, only the ability to try moves, which is our route to adding forecasts, soil moisture or prices.
 
 ## How we tested it
 
 ![Days at or above 35 °C at Çumra each year, with the train, validation and test periods](docs/img/chart_hot_days.png)
-*Every year of NASA POWER data for Çumra, coloured by its role. The agent trains on 1986–2008 (blue), we pick the best run on 2009–2014 (purple), and we test on 2015–2025 (dark), which holds the hottest years. 2025 (red) is the hottest of all.*
+*Every year of NASA POWER data for Çumra, coloured by its role. The agent trains on 1986–2008 (blue), we pick the best run on 2009–2014 (purple), and we test on 2015–2025 (dark), which holds 2023, 2024 and 2025, three of the five hottest years. 2025 (red) is the hottest of all.*
 
 * **Unseen real weather:** 2015–2025, real-weather agent.
 * **Unseen climate models:** 2026–2060 under GFDL-ESM4 and IPSL-CM6A-LR, climate-model agent. These futures reuse real 1986–2025 weather swings, so this test checks new warming trends, not new weather.
@@ -97,7 +100,7 @@ This is our own idea, not a suggested project. Reinforcement learning has been u
   * **Today's rotation** (maize → wheat → sugar beet): the farmer changes nothing.
   * **Myopic:** picks the best crop for this year only.
   * **FieldRota v1:** the best fixed 3-year rotation for the average climate.
-  * **Exact optimum:** dynamic programming, the best any planner could do in this simulator.
+  * **Exact optimum:** dynamic programming on the expected yearly score of the test climate models, our reference ceiling.
 
 ## Results
 
@@ -109,13 +112,13 @@ Konya, *save water* goal, in our simulator. Score goes up to 100, higher is bett
 | Myopic: best crop for this year only | 71.9 | 66.8 | 256 | 262 |
 | FieldRota v1: best fixed 3-year rotation, average climate | 70.7 | 70.3 | 269 | 274 |
 | **FieldRota-AI (ours)** | **70.3** | **70.4** | **269 (−45 %)** | **271 (−48 %)** |
-| Best possible (exact dynamic programming) | – | 70.4 | – | – |
+| Exact optimum (dynamic programming, expected score) | – | 70.4 | – | – |
 
 ![Well water by plan in Konya on both tests](docs/img/chart_water_konya.png)
 *FieldRota-AI uses about half the well water of today's rotation on both tests. Today's rotation also breaks the 2027 rules in about 2 of every 3 years; the AI never does.*
 
-* **45–48 % less well water** than today's rotation, 220–250 mm of water a year, with no rule breaks.
-* **100 %** of the best possible score on the unseen climate models.
+* **45–48 % less well water** than today's rotation, about 220–250 mm of water a year, with no rule breaks.
+* **100 %** of the exact optimum in Konya on the unseen climate models (99.5 % on average over all 15 region × goal tests).
 * **Looking ahead protects the soil.** The myopic planner saves as much water, but over 2026–2060 its soil score falls to 32 (AI: 84). On 2015–2025 it scores higher, because it grows the same three crops in another order and so had canola, not vetch, in the 2025 heat.
 
 ![One Çumra field from 2015 to 2025: yearly score and well water for the AI and today's rotation](docs/img/chart_years_2015_2025.png)
@@ -143,32 +146,26 @@ We built and tested FieldRota-AI in 48 hours, so we focused on the core: a plann
 
 **1. A record-hot summer can still surprise it (2025).**
 * **What we saw:** 2025 had the most days at or above 35 °C in our data. In July alone NASA POWER shows 20 such days (about 13 after the simulator's calibration to FieldRota), against about 4 in an average 2011–2024 July. The agent had planted vetch, which is heat-sensitive, so climate fit fell to 54 and the score to 53.9, its lowest test year.
-* **Why:** the crop is chosen in autumn, months before the summer, and this version has no forecast in its inputs. A farmer choosing in autumn faces the same blind spot. The simulator caught the heat damage correctly, which is what it should do.
+* **Why:** the crop is chosen in autumn, months before the summer, and this version has no forecast in its inputs. A farmer choosing in autumn faces the same blind spot. The simulator registered the heat damage, as it is designed to.
 * **How we'll fix it:** add a seasonal heat forecast (for example Copernicus C3S seasonal forecasts) to the agent's state, so it can switch to heat-tolerant barley or canola before a hot summer. Tabular Q-learning can take this extra input without changing the method, and we would test it on held-out years first.
 
 **2. In Konya it lands on the same plan as v1.**
-* **What we saw:** in Konya the AI and v1 reach the same barley → canola → vetch cycle. Elsewhere the AI is sometimes 1–4 points below v1 on 2015–2025 (Kansas: 47.7 vs 51.5).
+* **What we saw:** in Konya the AI and v1 settle on the same three crops, barley, vetch and canola, in a 3-year cycle (on 2015–2025 even in the same order). Elsewhere the AI is sometimes up to 3.7 points below v1 on 2015–2025 (Kansas: 47.7 vs 51.5).
 * **Why:** in Konya the climate trend is slow compared with a 3-year cycle, so the best plan really is close to a fixed rotation. Two very different methods agreeing is a strong cross-check. The small gaps come from learning from 23 single, noisy weather years.
 * **How we'll fix it:** train on far more weather by resampling and mixing real seasons, and average several training runs. Where the climate does shift, the AI already adapts: in Kansas it swaps sunflower for wheat after 2035 and beats v1 by 1.5 points.
 
 **3. It saves water, but at today's prices it earns less.**
 * **What we saw:** at autumn-2026 prices plus 2027 support, the AI plan earns about 7,700 TL per decare a year. Today's rotation earns 16,400, but the 2027 rules end it. A legal wheat → sunflower → maize rotation earns 10,700, and the AI still uses 42 % less well water than that one. (Seed, fertiliser and labour are not counted.)
 * **Why:** this version optimises the goal the 2027 rules set: less groundwater. Income is calculated and shown in the app, but it is not part of the reward yet.
-* **How we'll fix it:** the app already has every crop's price, yield, support payment and pumping cost, so income can enter the reward as one more weight. The farmer could then choose their own balance between water and money, and the same numbers show how much extra support would close the gap.
+* **How we'll fix it:** for Konya the app already has every crop's price, yield, support payment and pumping cost, so income can enter the reward as one more weight. The farmer could then choose their own balance between water and money, and the same numbers show how much extra support would close the gap.
 
 **4. The results come from a simulator, not yet from fields.**
 * **What we saw:** the simulator has no yields, pests or soil moisture carried between seasons. Its climate data covers cells about 50 km wide, and it uses one emissions scenario (SSP2-4.5).
-* **Why:** a field trial takes whole seasons, so in a weekend a simulator is the only way to test 2015–2060. We built it on measured data: crop water use from TAGEM–DSİ field measurements at Çumra and 41 years of real NASA weather. Its irrigation averages match FieldRota's calibrated values exactly.
+* **Why:** a field trial takes whole seasons, so in a weekend a simulator is the only way to test 2015–2060. We built it on measured data: crop water use from TAGEM–DSİ field measurements at Çumra and 41 years of real NASA weather. By design, its average irrigation equals FieldRota's calibrated 2011–2025 values; that period overlaps our 2015–2025 test, so that test checks the agent's choices, not the simulator's calibration.
 * **How we'll fix it:** add yields and soil moisture with a crop model such as FAO's AquaCrop, add a high-emissions scenario from the same NASA dataset, and check the plans against real well records and farmers' past rotations in Çumra.
 
 ![Well water against modelled income for every plan in Konya, 2015–2025](docs/img/chart_tradeoff.png)
 *The trade-off behind point 3. The water-saving plans (bottom left) earn less than today's rotation (top right), which breaks the 2027 rules. Hollow points break the rules; only the filled ones are allowed.*
-
-## Roadmap
-
-1. **Next:** a seasonal heat forecast in the agent's state, and income as a goal the farmer can weigh.
-2. **Then:** yields and soil moisture from a crop model, more emissions scenarios, and more training weather.
-3. **In the field:** test the plans with Çumra farmers and agricultural engineers against real well records.
 
 ## Run it yourself
 
@@ -202,7 +199,7 @@ We built and tested FieldRota-AI in 48 hours, so we focused on the core: a plann
 * **Çumra crop water use:** *Türkiye'de Sulanan Bitkilerin Bitki Su Tüketimleri Rehberi*, TAGEM–DSİ (2017). Described in TAGEM's SUET guide: https://www.tarimorman.gov.tr/TAGEM/Belgeler/TAGEM_SUET_KullaniciKilavuzu.v.1.0.pdf
 * **Çumra 2027 crop list, rotation rules and support payments:** Türkiye Ministry of Agriculture and Forestry, https://www.tarimorman.gov.tr
 * **Konya income figures (shown, not optimised):**
-  * yields from the Konya Provincial Directorate of Agriculture and Forestry (2023–24), https://konya.tarimorman.gov.tr; irrigated wheat yield range from a DergiPark review
+  * yields from the Konya Provincial Directorate of Agriculture and Forestry (2023–24), https://konya.tarimorman.gov.tr; irrigated wheat yield estimate (500–750 kg/da) from a DergiPark source, in line with Konya irrigated variety trials such as Aydoğan and Soylu (2017): https://dergipark.org.tr/tr/download/article-file/513334
   * prices from the Konya Commodity Exchange (https://www.ktb.org.tr), TMO (https://www.tmo.gov.tr), TÜRKŞEKER (https://www.turkseker.gov.tr) and Konya Şeker (https://www.konyaseker.com.tr), autumn 2026; hay prices from TÜSEDAD, May 2026 (reported at https://www.timeturk.com/hububat-hasadiyla-kaba-yem-fiyatlari-cakildi); potato and onion estimates from the Konya wholesale market (October 2026) and TEPGE 2025 producer prices (https://arastirma.tarimorman.gov.tr/tepge)
   * irrigation electricity tariff from EPDK (https://www.epdk.gov.tr)
   * well pumping energy from Topak, Yavuz and Süheri (2008), Selcuk Journal of Agriculture and Food Sciences 22(45): https://dergipark.org.tr/en/pub/selcukjafsci/article/1291074

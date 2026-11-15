@@ -110,7 +110,7 @@ ax.axvline(100,color=INK2,lw=1,ls=(0,(4,3)))
 ax.set_yticks(range(15),[f"{names[r].split(',')[0]} · {gname[g]}" for r,g in order],fontsize=9.5); ax.invert_yaxis()
 ax.set_xlabel("FieldRota-AI score as % of the exact optimum (dynamic programming), 2026–2060, unseen climate models")
 ax.set_xlim(97.8,100.3); ax.grid(axis="y",visible=False)
-ax.set_title(f"Close to the best possible plan: {fu.pct.mean():.1f} % on average, {fu.pct.min():.1f} % at worst")
+ax.set_title(f"Close to the exact optimum: {fu.pct.mean():.1f} % on average, {fu.pct.min():.1f} % at worst")
 save(fig,"chart_optimum.png")
 
 # 7 trade-off water vs income (Konya hist test, save water)
