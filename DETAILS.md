@@ -10,13 +10,13 @@ Five of the world's groundwater hotspots grow a lot of crops: the Konya Plain (T
 ## What we built
 **FieldRota** is our web app (`app/`). Its first version (v1) uses NASA POWER and NASA NEX-GDDP-CMIP6 data and Çumra's 2027 planting rules. It scores every 3-year rotation once, with the **average** climate, and suggests the best one.
 
-**FieldRota-AI** (`fieldrota_ai.py`, `FieldRota_AI.ipynb`) replaces that one-off scoring with a **learned planting policy**. A tabular **Q-learning** agent looks at the last two crops on the field each year, plus the decade (or whether last year was wet or dry), and picks the next crop for the farmer's goal: save water, healthy soil, or balanced.
+**FieldRota-AI** (`fieldrota_ai.py`, `FieldRota_AI.ipynb`) replaces that one-off scoring with a **learned planting policy**. A tabular **Q-learning** agent looks at the last two crops on the field each year and picks the next crop for the farmer's goal: save water, healthy soil, or balanced. We train two versions with the same simulator, rules and reward: a **real-weather agent** that also sees whether last year was wet or dry (trained on 1986–2008), and a **climate-model agent** that also sees the decade (trained on 2026–2060 futures). The app uses the climate-model agent.
 
 * **How it learns:** trial and error in a field simulator. The simulator turns FieldRota's calibrated averages into year-by-year values using **real NASA POWER daily weather**:
   * water need scales with each season's FAO-56 ET₀
   * rain and well irrigation follow the real season
   * climate fit drops with the real number of days ≥ 35 °C in each crop's most heat-sensitive month
-* **Future climate:** for 2026–2060, each year follows a CMIP6 model's trend toward its 2041–2060 values, plus the ups and downs of a real past year.
+* **Future climate:** for 2026–2060, each year follows a CMIP6 model's trend toward its 2041–2060 values, plus the ups and downs of a real 1986–2025 year (the same 40 real years are used for every model).
 * **Rules:** every move must follow FieldRota's rules, checked year by year:
   * the crop must be on the region's list
   * any 3 years in a row hold 3 different crops
@@ -24,14 +24,14 @@ Five of the world's groundwater hotspots grow a lot of crops: the Konya Plain (T
   * Konya: no two high-water crops back to back
   * the sowing date may not overlap the previous harvest
 * **Reward:** FieldRota's own yearly score: well water, climate fit and soil health, weighted by the goal.
-* **In the app:** section 5 shows the AI's plan from 2027 to 2060, starting from the crops the farmer enters, plus how it did on data it never saw.
+* **In the app:** section 5 shows the AI's plan from 2027 to 2060, starting from the crops the farmer enters, plus how both agents did on their test data.
 
 ## How we tested it
 
 | | Train | Pick the best of 3 training runs (validation) | Test (never seen) |
 |---|---|---|---|
-| Real weather | 1986–2008 | 2009–2014 | **2015–2025** |
-| Climate models, 2026–2060 | ACCESS-CM2, EC-Earth3, MPI-ESM1-2-HR | MRI-ESM2-0 | **GFDL-ESM4, IPSL-CM6A-LR** (41 weather sequences each) |
+| Real weather (real-weather agent) | 1986–2008 | 2009–2014 | **2015–2025** |
+| Climate models, 2026–2060 (climate-model agent) | ACCESS-CM2, EC-Earth3, MPI-ESM1-2-HR | MRI-ESM2-0 | **GFDL-ESM4, IPSL-CM6A-LR** (40 weather sequences each) |
 
 We compare against:
 * the **farmers' common rotation** in each region
@@ -40,7 +40,7 @@ We compare against:
 * the **exact optimum** from dynamic programming on the expected score
 
 ## Results (5 regions × 3 goals)
-All scores are FieldRota's 0–100 yearly score for the chosen goal, averaged over the test years. The numbers come from `results/summary_*.csv`, produced by `export_ai.py`.
+All scores are FieldRota's yearly score (up to 100; it can drop below 0 when a plan needs more well water than the region's thirstiest crop) for the chosen goal, averaged over the test years. The numbers come from `results/summary_*.csv`, produced by `export_ai.py`.
 
 **On 2 climate models it never saw (2026–2060), over 15 region × goal pairs:**
 * FieldRota-AI reaches **99.5 % of the exact optimum** on average (lowest: 98.5 %).
@@ -49,7 +49,7 @@ All scores are FieldRota's 0–100 yearly score for the chosen goal, averaged ov
 
 **On real weather it never saw (2015–2025):**
 * **+44.1 points** above the farmers' common rotation.
-* **−0.55 points** against v1 (range −3.8 to +1.8).
+* **−0.55 points** against v1 (range −3.7 to +1.8).
 
 **Well water with the "save water" goal (m³ per decare per year, 1 m³/da = 1 mm):**
 
@@ -73,15 +73,16 @@ The middle columns are the average over 2026–2060 on the two unseen climate mo
 | California | 24.3 | 87.0 | 87.1 | **87.1** | 87.1 |
 | La Mancha | 31.6 | 78.3 | 78.2 | **78.3** | 78.3 |
 
-**What the AI changes as the climate warms:** in Kansas (balanced goal) it grows winter canola, sunflower and soybean until about 2035. After that it drops sunflower, whose climate fit falls with more hot days, and brings in wheat. That puts it 1.5 points above v1's fixed rotation on the unseen models.
+**What the AI changes as the climate warms:** in Kansas (balanced goal) it grows winter canola, sunflower and soybean until about 2035. After that it drops sunflower, whose climate fit falls with more hot days, and brings in wheat. That puts it 1.5 points above v1's fixed rotation on the unseen models (0.7 above v1's 2050s pick).
 
 ## Where it fails (honest notes)
 * **The AI is not clearly better than FieldRota v1.** In most region/goal pairs the learned policy and v1's exhaustive search land on almost the same plan. The best plan really is close to a fixed rotation, because the climate trend is slow compared with a 3-year cycle. The AI still adds three things:
   * it starts from the farmer's real field history, including crops that are now banned (Konya's sugar beet)
-  * it plans to 2060 and switches crops when the decades warm (Kansas: sorghum out, wheat in)
+  * it plans to 2060 and switches crops when the decades warm (Kansas, balanced goal: sunflower out, wheat in)
   * it reaches almost the same answer as v1 by a completely different method, which makes the advice more trustworthy
-* **Learning from noisy years costs a little.** Single weather years are noisy, so the learned policy is sometimes 1–3 points below v1 or the optimum. This happens most in the soil-goal runs and on Kansas's real 2015–2025 weather.
-* **Looking ahead matters.** A myopic planner usually matches the AI, but in Konya (save-water goal) it drifts into rotations that hurt the soil.
+* **Learning from noisy years costs a little.** Single weather years are noisy, so the learned policy is sometimes 1–4 points below v1 or the optimum. This happens most in the soil-goal runs and on Kansas's real 2015–2025 weather.
+* **Looking ahead matters.** A myopic planner usually matches the AI, but in Konya (save-water goal, 2026–2060) it drifts into rotations that hurt the soil (soil score 32 vs 84). On 2015–2025 real weather the myopic planner scores 1.6 points above the AI: it grows the same three crops in another order and so had canola, not vetch, in the 2025 heat.
+* **Farmers earn less.** Income is shown, not optimised. In Konya (2015–2025 weather) the AI plan earns about 7,700 TL/da a year, against 16,400 for today's rotation (which the 2027 rules end) and 10,700 for the legal wheat → sunflower → maize rotation. Against that legal rotation the AI still uses 42 % less well water.
 * **Not modelled:**
   * crop yields (climate fit stands in for them)
   * prices (Konya income is shown, not optimised)
@@ -89,7 +90,7 @@ The middle columns are the average over 2026–2060 on the two unseen climate mo
   * soil moisture carried between seasons
   * double cropping, except Punjab's crop pairs
   * farmers' costs
-* **Data limits:** the climate data covers about 50 km. NASA POWER rain outside Konya was not checked against weather stations. Future years use a delta method (trend plus real-year anomalies), not daily CMIP6 weather, and only one scenario (SSP2-4.5).
+* **Data limits:** the climate data covers about 50 km. Crop water use comes from the TAGEM–DSİ (2017) Çumra guide, except canola (ministry value) and safflower (nearby stations). The simulator is calibrated to FieldRota's 2011–2025 means (overlapping the test years), and the heat-sensitivity slope is fitted on 9 climate runs including all 6 CMIP6 models (also the validation and test models); it is part of the simulator, not of what the agent learns. The climate-model test reuses the same 40 real-year weather swings as training; only the models' trends differ. The year-by-year irrigation check (0 mm difference) holds by construction; climate fit is clipped to 0–100, which shifts some averages (potato 54 vs 42, vetch 93 vs 98). NASA POWER rain outside Konya was not checked against weather stations. Future years use a delta method (trend plus real-year anomalies), not daily CMIP6 weather, and only one scenario (SSP2-4.5).
 
 ## Run it
 * **Notebook:** open `FieldRota_AI.ipynb` in Google Colab and set `REPO_URL` in the first cell to this repository, then *Run all* (about 5 minutes; set `RUN_ALL = True` to retrain every region, about 25 minutes). It downloads NASA POWER live and falls back to the saved copy in `data/weather/` if the API is down.
@@ -121,6 +122,8 @@ The middle columns are the average over 2026–2060 on the two unseen climate mo
   * Çumra 2027 planting rules and support payments, Türkiye Ministry of Agriculture and Forestry
   * crop prices as listed in the app
 * **Libraries:** NumPy, pandas, Matplotlib; D3 and topojson-client in the web app.
-* **AI tools:** Claude (Anthropic) helped write and debug code and text. The team reviewed every part and can explain it.
-* **Hackathon note:** all code was written during the hackathon (14–15 November 2026). The FieldRota idea is also being developed for NASA Space Apps Challenge 2026.
+* **Full source list with links:** see the Sources section of README.md (data, imagery, map outlines, fonts, prices).
+* **Related work:** Turchetta et al. (2022), *Learning Long-Term Crop Management Strategies with CyclesGym*, NeurIPS Datasets and Benchmarks.
+* **AI tools:** Claude (Anthropic), used through Claude Code, helped write and debug code and text at our direction and made the commits in this repository. We chose the problem, data, method and tests, checked the results and can explain every part.
+* **Hackathon note:** all code was written during the hackathon (14–15 November 2026), including the FieldRota web app (v1). We also entered the web app in NASA Space Apps Challenge 2026, which ran on the same weekend.
 

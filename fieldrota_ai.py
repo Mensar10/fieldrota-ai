@@ -5,8 +5,10 @@ FieldRota (v1) scores every 3-year rotation once, with the AVERAGE climate of
 2011-2025, and suggests the best one. FieldRota-AI learns a planting POLICY instead:
 every year it looks at the last two crops on the field (and whether last year was wet
 or dry) and picks the next crop. It learns by trial and error (tabular Q-learning) in
-a field simulator driven by 30 real years of NASA POWER weather (1986-2014), and is
-tested on 11 years it never saw (2015-2025).
+a field simulator driven by real NASA POWER weather: trained on 23 years (1986-2008),
+best run picked on 2009-2014, tested on 11 years it never saw (2015-2025). A second
+agent (state: last two crops + decade) is trained on 2026-2060 CMIP6 futures and is
+the one exported to the web app.
 
 The simulator reuses FieldRota's own calibrated region data, year by year:
   - crop water need   = FieldRota seasonal need x (this year's ET0 / 2011-2025 mean ET0)
@@ -14,7 +16,7 @@ The simulator reuses FieldRota's own calibrated region data, year by year:
   - well irrigation    = need - effective rain (FieldRota's own effective-rain ratio)
   - climate fit        = FieldRota fit, shifted by this year's hot days (Tmax >= 35 C)
                          in the crop's most sensitive month; the sensitivity (points per
-                         hot day) is fitted on FieldRota's 8 climate runs per crop
+                         hot day) is fitted on FieldRota's 9 climate runs per crop
                          (past, now, 2041-2060 and 6 CMIP6 models)
   - soil health        = FieldRota soil score of the last 3 crops (sliding window)
   - rules              = FieldRota rules (Konya: Cumra 2027 list; elsewhere: no fallow,
