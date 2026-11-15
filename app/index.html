@@ -375,7 +375,7 @@ KONYA.region={key:"konya"}; const RCACHE={konya:KONYA}; let REGION="konya";
 async function setRegion(k){ if(k===REGION) return true; if(!RCACHE[k]){ try{ RCACHE[k]=await (await fetch(`regions/${k}.json`)).json(); }catch(e){ return false; } }
   REGION=k; D=RCACHE[k]; current=presetsOf()[0].slice(); if(period==="f2040"&&!D.periods.f2040) period="now"; render(); return true; }
 const T={
- en:{tag:"Helps farmers choose a 3-year crop rotation that pumps less groundwater, builds healthier soil and copes with hotter summers, using NASA data. Fully calibrated pilot: the Konya Plain, Türkiye, plus four groundwater hotspots worldwide. NASA Space Apps 2026 · Field Shift · Team cezeri1",
+ en:{tag:"Helps farmers choose a 3-year crop rotation that pumps less groundwater, builds healthier soil and copes with hotter summers, using NASA data. Fully calibrated pilot: the Konya Plain, Türkiye, plus four groundwater hotspots worldwide. Section 5: FieldRota-AI, a reinforcement-learning planner tested on weather years and climate models it never trained on.",
   s1:"What do you grow now?",s1h:"Example field: irrigated land in Çumra, Konya. Pick your crops for the last three years.",y1:"Year 1",y2:"Year 2",y3:"Year 3",common:"Common here:",
   sizeL:"Your field size:",sizeU:"decares (1 da = 1,000 m²)",
   s2:"What matters most to you?",gWater:["Save water","Pump less from the well"],gSoil:["Healthy soil","Feed and protect the soil"],gInc:["Income","Earn the most per decare"],gBal:["Balanced","Water, soil and climate together"],
@@ -415,7 +415,7 @@ const T={
   ai:"Code and text were written with AI assistance (Claude); the team chose the approach and checked the results.",bare:"bare months",
   ev:"Evidence",risk:"Risks to check locally",gaps:"Missing information",agree:(n,m)=>`${n} of ${m} climate models agree this option still uses less well water than your current rotation in the 2050s.`,
   econEv:(u,y,p,s,su,src)=>`<b>${u}</b> money: ${y} kg/da × ₺${p}/kg = ₺${s}; 2027 support ₺${su}/da. <small>${src}</small>`},
- tr:{tag:"Çiftçilerin daha az yeraltı suyu çeken, toprağı güçlendiren ve sıcak yazlara dayanan 3 yıllık bir ekim nöbeti seçmesine NASA verisiyle yardım eder. Tam ayarlı pilot: Konya Ovası, Türkiye; ayrıca dünyada yeraltı suyu kaybeden dört bölge. NASA Space Apps 2026 · Field Shift · Takım cezeri1",
+ tr:{tag:"Çiftçilerin daha az yeraltı suyu çeken, toprağı güçlendiren ve sıcak yazlara dayanan 3 yıllık bir ekim nöbeti seçmesine NASA verisiyle yardım eder. Tam ayarlı pilot: Konya Ovası, Türkiye; ayrıca dünyada yeraltı suyu kaybeden dört bölge. 5. bölüm: FieldRota-AI, eğitimde hiç görmediği hava yılları ve iklim modelleriyle test edilmiş pekiştirmeli öğrenme planlayıcısı.",
   s1:"Şu an ne ekiyorsunuz?",s1h:"Örnek tarla: Çumra, Konya'da sulu bir tarla. Son üç yılda ektiğiniz ürünleri seçin.",y1:"1. yıl",y2:"2. yıl",y3:"3. yıl",common:"Burada yaygın:",
   sizeL:"Tarlanız:",sizeU:"dekar",
   s2:"Sizin için en önemlisi ne?",gWater:["Suyu korumak","Kuyudan daha az su çekmek"],gSoil:["Sağlıklı toprak","Toprağı beslemek ve korumak"],gInc:["Gelir","Dekardan en çok kazanç"],gBal:["Dengeli","Su, toprak ve iklim birlikte"],

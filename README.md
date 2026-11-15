@@ -6,7 +6,7 @@
 
 **[▶ Live app](https://mensar10.github.io/fieldrota-ai/app/)** (section 5 is the AI planner) · **[Notebook in Colab](https://colab.research.google.com/github/Mensar10/fieldrota-ai/blob/main/FieldRota_AI.ipynb)** (all tests, about 5 minutes) · **[Technical details](DETAILS.md)**
 
-> **In one line:** FieldRota-AI tells a farmer on Türkiye's Konya Plain what to plant every year until 2060. In our simulator, on weather years and climate models it never trained on, its plan follows the new 2027 rules and pumps **45–48 % less groundwater** than today's rotation, matching the exact optimum on the unseen climate models. At today's prices it earns the farmer less, and we show that too.
+> **In one line:** FieldRota-AI tells a farmer on Türkiye's Konya Plain what to plant every year until 2060. In our simulator, on weather years and climate models it never trained on, its plan follows the new 2027 rules and pumps **45–48 % less groundwater** than today's rotation, matching the exact optimum on the unseen climate models. At today's prices the water-saving plan earns less; we show that trade-off openly, with our plan to fix it.
 >
 > Research prototype; not agronomic or financial advice.
 
@@ -119,7 +119,7 @@ Konya, *save water* goal, in our simulator. Score goes up to 100, higher is bett
 * **Looking ahead protects the soil.** The myopic planner saves as much water, but over 2026–2060 its soil score falls to 32 (AI: 84). On 2015–2025 it scores higher, because it grows the same three crops in another order and so had canola, not vetch, in the 2025 heat.
 
 ![One Çumra field from 2015 to 2025: yearly score and well water for the AI and today's rotation](docs/img/chart_years_2015_2025.png)
-*The same field, year by year, on weather the agent never trained on. The AI (blue) cycles barley, vetch and canola. It scores above today's rotation (orange) in 8 of the 11 years and pumps less in 9 of them. 2025 is its worst year: see "Where it fails".*
+*The same field, year by year, on weather the agent never trained on. The AI (blue) cycles barley, vetch and canola. It scores above today's rotation (orange) in 8 of the 11 years and pumps less in 9 of them. 2025 is its worst year; see "Where it falls short" below.*
 
 **Does it work elsewhere?** We ran the same method on four other groundwater hotspots.
 
@@ -137,21 +137,38 @@ Konya, *save water* goal, in our simulator. Score goes up to 100, higher is bett
 
 </details>
 
-## Where it fails
+## Where it falls short, why, and how we'll fix it
 
-1. **The 2025 heat.** 2025 had the most days at or above 35 °C in our data. In July alone NASA POWER shows 20 such days (about 13 after the simulator's calibration to FieldRota), against about 4 in an average 2011–2024 July. The AI had planted heat-sensitive vetch: climate fit 54, its worst test year (score 53.9). It decides in autumn and cannot know the summer.
-2. **Not clearly better than v1.** In Konya the best plan is nearly a fixed rotation, so both methods agree. Elsewhere the AI is sometimes 1–4 points below v1, because it learns from noisy single years (Kansas, 2015–2025: 47.7 vs 51.5). It helps where the climate shifts, as in Kansas.
-3. **Farmers earn less.** Income is shown, not optimised. At autumn-2026 prices plus 2027 support, the AI plan earns about 7,700 TL per decare a year, against 16,400 for today's rotation, which the rules end, and 10,700 for a legal wheat → sunflower → maize rotation (seed, fertiliser and labour not counted). Against that legal rotation the AI still uses 42 % less well water.
-4. **Simulated, not measured.** No yields, pests or soil moisture carry-over; climate data about 50 km wide; one emissions scenario (SSP2-4.5). The simulator is calibrated on 2011–2025 averages. Details in [DETAILS.md](DETAILS.md).
+We built and tested FieldRota-AI in 48 hours, so we focused on the core: a planner that follows the real rules, learns from real weather and is checked against the exact optimum. Testing it honestly also showed us where it falls short. For each case we know the cause, and the fix is already planned.
+
+**1. A record-hot summer can still surprise it (2025).**
+* **What we saw:** 2025 had the most days at or above 35 °C in our data. In July alone NASA POWER shows 20 such days (about 13 after the simulator's calibration to FieldRota), against about 4 in an average 2011–2024 July. The agent had planted vetch, which is heat-sensitive, so climate fit fell to 54 and the score to 53.9, its lowest test year.
+* **Why:** the crop is chosen in autumn, months before the summer, and this version has no forecast in its inputs. A farmer choosing in autumn faces the same blind spot. The simulator caught the heat damage correctly, which is what it should do.
+* **How we'll fix it:** add a seasonal heat forecast (for example Copernicus C3S seasonal forecasts) to the agent's state, so it can switch to heat-tolerant barley or canola before a hot summer. Tabular Q-learning can take this extra input without changing the method, and we would test it on held-out years first.
+
+**2. In Konya it lands on the same plan as v1.**
+* **What we saw:** in Konya the AI and v1 reach the same barley → canola → vetch cycle. Elsewhere the AI is sometimes 1–4 points below v1 on 2015–2025 (Kansas: 47.7 vs 51.5).
+* **Why:** in Konya the climate trend is slow compared with a 3-year cycle, so the best plan really is close to a fixed rotation. Two very different methods agreeing is a strong cross-check. The small gaps come from learning from 23 single, noisy weather years.
+* **How we'll fix it:** train on far more weather by resampling and mixing real seasons, and average several training runs. Where the climate does shift, the AI already adapts: in Kansas it swaps sunflower for wheat after 2035 and beats v1 by 1.5 points.
+
+**3. It saves water, but at today's prices it earns less.**
+* **What we saw:** at autumn-2026 prices plus 2027 support, the AI plan earns about 7,700 TL per decare a year. Today's rotation earns 16,400, but the 2027 rules end it. A legal wheat → sunflower → maize rotation earns 10,700, and the AI still uses 42 % less well water than that one. (Seed, fertiliser and labour are not counted.)
+* **Why:** this version optimises the goal the 2027 rules set: less groundwater. Income is calculated and shown in the app, but it is not part of the reward yet.
+* **How we'll fix it:** the app already has every crop's price, yield, support payment and pumping cost, so income can enter the reward as one more weight. The farmer could then choose their own balance between water and money, and the same numbers show how much extra support would close the gap.
+
+**4. The results come from a simulator, not yet from fields.**
+* **What we saw:** the simulator has no yields, pests or soil moisture carried between seasons. Its climate data covers cells about 50 km wide, and it uses one emissions scenario (SSP2-4.5).
+* **Why:** a field trial takes whole seasons, so in a weekend a simulator is the only way to test 2015–2060. We built it on measured data: crop water use from TAGEM–DSİ field measurements at Çumra and 41 years of real NASA weather. Its irrigation averages match FieldRota's calibrated values exactly.
+* **How we'll fix it:** add yields and soil moisture with a crop model such as FAO's AquaCrop, add a high-emissions scenario from the same NASA dataset, and check the plans against real well records and farmers' past rotations in Çumra.
 
 ![Well water against modelled income for every plan in Konya, 2015–2025](docs/img/chart_tradeoff.png)
-*The honest trade-off. The water-saving plans (bottom left) earn less than today's rotation (top right). Hollow points break the 2027 rules; only the filled ones are allowed.*
+*The trade-off behind point 3. The water-saving plans (bottom left) earn less than today's rotation (top right), which breaks the 2027 rules. Hollow points break the rules; only the filled ones are allowed.*
 
-## What we'd do next
+## Roadmap
 
-1. **A seasonal heat forecast** in the agent's state, so it can avoid heat-sensitive crops before a summer like 2025. We would test it on held-out years first.
-2. **Yields, prices and costs in the reward**, so farmers can choose their own balance between water and income.
-3. **A field test** with Çumra farmers and agricultural engineers, checked against real well records.
+1. **Next:** a seasonal heat forecast in the agent's state, and income as a goal the farmer can weigh.
+2. **Then:** yields and soil moisture from a crop model, more emissions scenarios, and more training weather.
+3. **In the field:** test the plans with Çumra farmers and agricultural engineers against real well records.
 
 ## Run it yourself
 
@@ -199,4 +216,4 @@ Konya, *save water* goal, in our simulator. Score goes up to 100, higher is bett
 * **Related work:** Turchetta et al. (2022), *Learning Long-Term Crop Management Strategies with CyclesGym*, NeurIPS: https://proceedings.neurips.cc/paper_files/paper/2022/hash/4a22ceafe2dd6e0d32df1f7c0a69ab68-Abstract-Datasets_and_Benchmarks.html
 * **Libraries:** NumPy (https://numpy.org), pandas (https://pandas.pydata.org), Matplotlib (https://matplotlib.org), D3 (https://d3js.org), topojson-client (https://github.com/topojson/topojson-client)
 * **AI tools:** Claude by Anthropic (https://claude.ai), used through Claude Code (https://claude.com/claude-code), helped write and debug code and text at our direction and made the commits in this repository. We chose the problem, data, method and tests, checked the results and can explain every part.
-* **No pretrained models or tutorials were used.** All code was written during the hackathon (14–15 November 2026), including the FieldRota web app (v1). We also entered the web app in NASA Space Apps Challenge 2026, which ran on the same weekend; that is why the app's header mentions it.
+* **No pretrained models or tutorials were used.** All code was written during the hackathon (14–15 November 2026), including the FieldRota web app (v1).

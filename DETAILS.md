@@ -75,7 +75,8 @@ The middle columns are the average over 2026–2060 on the two unseen climate mo
 
 **What the AI changes as the climate warms:** in Kansas (balanced goal) it grows winter canola, sunflower and soybean until about 2035. After that it drops sunflower, whose climate fit falls with more hot days, and brings in wheat. That puts it 1.5 points above v1's fixed rotation on the unseen models (0.7 above v1's 2050s pick).
 
-## Where it fails (honest notes)
+## Where it falls short (honest notes)
+The README explains, for each point, why it happens and how we plan to fix it.
 * **The AI is not clearly better than FieldRota v1.** In most region/goal pairs the learned policy and v1's exhaustive search land on almost the same plan. The best plan really is close to a fixed rotation, because the climate trend is slow compared with a 3-year cycle. The AI still adds three things:
   * it starts from the farmer's real field history, including crops that are now banned (Konya's sugar beet)
   * it plans to 2060 and switches crops when the decades warm (Kansas, balanced goal: sunflower out, wheat in)
@@ -125,5 +126,5 @@ The middle columns are the average over 2026–2060 on the two unseen climate mo
 * **Full source list with links:** see the Sources section of README.md (data, imagery, map outlines, fonts, prices).
 * **Related work:** Turchetta et al. (2022), *Learning Long-Term Crop Management Strategies with CyclesGym*, NeurIPS Datasets and Benchmarks.
 * **AI tools:** Claude (Anthropic), used through Claude Code, helped write and debug code and text at our direction and made the commits in this repository. We chose the problem, data, method and tests, checked the results and can explain every part.
-* **Hackathon note:** all code was written during the hackathon (14–15 November 2026), including the FieldRota web app (v1). We also entered the web app in NASA Space Apps Challenge 2026, which ran on the same weekend.
+* **Hackathon note:** all code was written during the hackathon (14–15 November 2026), including the FieldRota web app (v1).
 
