@@ -2,9 +2,9 @@
 
 **A reinforcement-learning planner that tells a farmer what to plant next, so the field pumps less groundwater, now and in a hotter future.**
 
-**Track:** Climate · Veritas AI International High School Hackathon 2026
+**Xylem Global Student Innovation Challenge 2026** · High School Track · Challenge #1: Water Quantity · Team İstikbalin Cezerileri
 
-**[▶ Demo video (2 min)](https://youtu.be/iyL9VEknNFA)** · **[Live app](https://mensar10.github.io/fieldrota-ai/app/)** (section 5 is the AI planner) · **[Notebook in Colab](https://colab.research.google.com/github/Mensar10/fieldrota-ai/blob/main/FieldRota_AI.ipynb)** (all tests, about 5 minutes) · **[Technical details](DETAILS.md)**
+**[▶ Video presentation & demo](https://youtu.be/TpGPlDl2FKo)** · **[Interactive presentation](https://mensar10.github.io/fieldrota-ai/presentation/)** · **[Live app](https://mensar10.github.io/fieldrota-ai/app/)** (section 5 is the AI planner) · **[Notebook in Colab](https://colab.research.google.com/github/Mensar10/fieldrota-ai/blob/main/FieldRota_AI.ipynb)** (all tests, about 5 minutes) · **[Technical details](DETAILS.md)**
 
 > **In one line:** FieldRota-AI tells a farmer on Türkiye's Konya Plain what to plant every year until 2060. In our simulator, on weather years and climate models it never trained on, its plan follows the new 2027 rules and pumps **45–48 % less groundwater** than today's rotation, matching the exact optimum on the unseen climate models. At today's prices the water-saving plan earns less; we show that trade-off openly, with our plan to fix it.
 >
@@ -13,8 +13,8 @@
 ![FieldRota-AI in the app: the agent's plan for a Konya field and its test on data it never trained on](docs/img/app_05_ai_konya_water.jpg)
 *Section 5 of the app. The farmer's field last grew wheat, then sugar beet. The agent plans barley → canola → vetch until 2060, and the table shows how it did on years and climate models it did not train on.*
 
-[![Watch the 2-minute demo video](docs/img/video_thumb.jpg)](https://youtu.be/iyL9VEknNFA)
-*The 2-minute demo: the problem, the app, the AI's plan, the honest test and where it falls short. Click to watch on YouTube.*
+[![Watch the video presentation and demo](docs/img/video_thumb.jpg)](https://youtu.be/TpGPlDl2FKo)
+*The video presentation and demo: the problem, the idea, the AI's plan, the honest test and where it falls short. Click to watch on YouTube. The animated slides are also online as an [interactive presentation](https://mensar10.github.io/fieldrota-ai/presentation/).*
 
 ---
 
@@ -59,12 +59,14 @@ It lives in our web app, FieldRota. The farmer finds the field on a satellite ma
 
 </details>
 
-## How it fits the AI + Climate track
+## How it fits Xylem Challenge #1: Water Quantity
+
+The challenge asks for responsible management of growing water demand. Farming is the largest user of fresh water, and FieldRota-AI targets the decision that sets how hard a field pumps its aquifer: which crop to sow next.
 
 * **One place, one user, one decision.** Irrigated fields in Çumra, on the Konya Plain. The user is the farmer, and the decision is which crop to sow each autumn.
 * **Adapting farming to a changing climate.** The planner is trained and tested on NASA CMIP6 climate projections up to 2060, so its advice is built for hotter summers. Where the climate shift matters, it changes crops over the decades, as it does in Kansas.
 * **Cutting the climate impact of irrigation.** Pumping groundwater from deep wells takes electricity. At the 1.03 kWh per m³ measured on Çumra's deep wells (Topak et al., 2008), the 220–250 m³ of water saved per decare means about 225–255 kWh less electricity per decare every year (simulated). The plans also bring in legumes such as vetch, which leave nitrogen in the soil for the next crop and reduce the need for synthetic fertiliser.
-* **A fair test.** We train on earlier years and test on later ones, never shuffling them, and compare with the persistence baseline the track asks for: next year's crops stay the same as this year's.
+* **A fair test.** We train on earlier years and test on later ones, never shuffling them, and compare with a persistence baseline: next year's crops stay the same as this year's.
 
 ## What is new
 
@@ -220,4 +222,4 @@ We built and tested FieldRota-AI in 48 hours, so we focused on the core: a plann
 * **Related work:** Turchetta et al. (2022), *Learning Long-Term Crop Management Strategies with CyclesGym*, NeurIPS: https://proceedings.neurips.cc/paper_files/paper/2022/hash/4a22ceafe2dd6e0d32df1f7c0a69ab68-Abstract-Datasets_and_Benchmarks.html
 * **Libraries:** NumPy (https://numpy.org), pandas (https://pandas.pydata.org), Matplotlib (https://matplotlib.org), D3 (https://d3js.org), topojson-client (https://github.com/topojson/topojson-client)
 * **AI tools:** Claude by Anthropic (https://claude.ai), used through Claude Code (https://claude.com/claude-code), helped write and debug code and text at our direction and made the commits in this repository. We chose the problem, data, method and tests, checked the results and can explain every part.
-* **No pretrained models or tutorials were used.** All code was written during the hackathon (14–15 November 2026), including the FieldRota web app (v1).
+* **No pretrained models or tutorials were used.** The first version of all code, including the FieldRota web app (v1), was written by our team on 14–15 November 2026.
