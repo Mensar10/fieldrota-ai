@@ -125,6 +125,6 @@ The README explains, for each point, why it happens and how we plan to fix it.
 * **Libraries:** NumPy, pandas, Matplotlib; D3 and topojson-client in the web app.
 * **Full source list with links:** see the Sources section of README.md (data, imagery, map outlines, fonts, prices).
 * **Related work:** Turchetta et al. (2022), *Learning Long-Term Crop Management Strategies with CyclesGym*, NeurIPS Datasets and Benchmarks.
-* **AI tools:** Claude (Anthropic), used through Claude Code, helped write and debug code and text at our direction and made the commits in this repository. We chose the problem, data, method and tests, checked the results and can explain every part.
+* **AI tools:** Claude (Anthropic), used through Claude Code, helped write and debug code and text at our direction. We chose the problem, data, method and tests, checked the results and can explain every part.
 * **Timeline note:** the first version of all code, including the FieldRota web app (v1), was written on 14–15 November 2026.
 

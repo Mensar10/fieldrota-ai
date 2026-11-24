@@ -200,6 +200,16 @@ We built and tested FieldRota-AI in 48 hours, so we focused on the core: a plann
 
 </details>
 
+## Team
+
+**İstikbalin Cezerileri**, İstanbul Atatürk Science High School, Türkiye
+
+* **Mustafa Ensar Erol**
+* **Eymen Efe Çetin**
+
+Entry to the **Xylem Global Student Innovation Challenge 2026**, High School Track, Challenge #1: Water Quantity.
+[Video presentation & demo](https://youtu.be/TpGPlDl2FKo) · [Interactive presentation](https://mensar10.github.io/fieldrota-ai/presentation/) · [Live app](https://mensar10.github.io/fieldrota-ai/app/)
+
 ## Sources
 * **NASA POWER daily agroclimatology:** https://power.larc.nasa.gov
 * **NASA NEX-GDDP-CMIP6 climate projections, SSP2-4.5, 6 models** (Thrasher et al., 2022): https://www.nccs.nasa.gov/services/data-collections/land-based-products/nex-gddp-cmip6
@@ -221,5 +231,5 @@ We built and tested FieldRota-AI in 48 hours, so we focused on the core: a plann
   * Fonts: Bricolage Grotesque, Source Sans 3 and JetBrains Mono via Google Fonts (SIL Open Font License): https://fonts.google.com
 * **Related work:** Turchetta et al. (2022), *Learning Long-Term Crop Management Strategies with CyclesGym*, NeurIPS: https://proceedings.neurips.cc/paper_files/paper/2022/hash/4a22ceafe2dd6e0d32df1f7c0a69ab68-Abstract-Datasets_and_Benchmarks.html
 * **Libraries:** NumPy (https://numpy.org), pandas (https://pandas.pydata.org), Matplotlib (https://matplotlib.org), D3 (https://d3js.org), topojson-client (https://github.com/topojson/topojson-client)
-* **AI tools:** Claude by Anthropic (https://claude.ai), used through Claude Code (https://claude.com/claude-code), helped write and debug code and text at our direction and made the commits in this repository. We chose the problem, data, method and tests, checked the results and can explain every part.
-* **No pretrained models or tutorials were used.** The first version of all code, including the FieldRota web app (v1), was written by our team on 14–15 November 2026.
+* **AI tools:** Claude by Anthropic (https://claude.ai), used through Claude Code (https://claude.com/claude-code), helped write and debug code and text at our direction. We chose the problem, data, method and tests, checked the results and can explain every part.
+* **No pretrained models or tutorials were used.** The first version of all code, including the FieldRota web app (v1), was built on 14–15 November 2026.
