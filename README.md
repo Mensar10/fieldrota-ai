@@ -6,7 +6,7 @@
 
 **[▶ Video presentation & demo](https://youtu.be/TpGPlDl2FKo)** · **[Interactive presentation](https://mensar10.github.io/fieldrota-ai/presentation/)** · **[Live app](https://mensar10.github.io/fieldrota-ai/app/)** (section 5 is the AI planner) · **[Notebook in Colab](https://colab.research.google.com/github/Mensar10/fieldrota-ai/blob/main/FieldRota_AI.ipynb)** (all tests, about 5 minutes) · **[Technical details](DETAILS.md)**
 
-> **In one line:** FieldRota-AI tells a farmer on Türkiye's Konya Plain what to plant every year until 2060. In our simulator, on weather years and climate models it never trained on, its plan follows the new 2027 rules and pumps **45–48 % less groundwater** than today's rotation, matching the exact optimum on the unseen climate models. At today's prices the water-saving plan earns less; we show that trade-off openly, with our plan to fix it.
+> **In one line:** FieldRota-AI tells a farmer on Türkiye's Konya Plain what to plant every year until 2060. In our simulator, on weather years and climate models it never trained on, its plan follows the new 2027 rules and pumps **45–48 % less groundwater** than today's rotation, matching the exact optimum on the unseen climate models. Even when farmers keep the crops they already grow, planning their order saves **15–35 %**. At today's prices the water-saving plan earns less; we show that trade-off openly, with our plan to fix it.
 >
 > Research prototype; not agronomic or financial advice.
 
@@ -149,9 +149,46 @@ Konya, *save water* goal, in our simulator. Score goes up to 100, higher is bett
 
 </details>
 
+### Keep my crops: saving water without dropping familiar crops
+
+Farmers rarely want to give up the crops they know. In *keep-my-crops* mode the agent may only use the farmer's own crops (minus any crop the rules ban) plus **one** extra crop, trained and tested with the same recipe as above. Goal: save water; 2026–2060 on the two unseen climate models.
+
+| Region | The farmer keeps | The AI adds | AI plan (repeats) | Well water, today's rotation → AI (m³/da/yr) |
+|---|---|---|---|---|
+| Konya, Türkiye | maize, wheat (sugar beet is banned from 2027) | barley | barley → wheat → maize | 518 → 369 (**−29 %**) |
+| La Mancha, Spain | maize, barley | pea | pea → maize → barley | 613 → 402 (**−34 %**) |
+| Kansas, USA | maize, soybean | canola | canola → maize → soybean | 579 → 495 (**−15 %**) |
+| California, USA | maize, tomato, cotton | chickpea | chickpea → tomato → maize (the AI drops cotton) | 880 → 575 (**−35 %**) |
+
+* **15–35 % less well water** while the farmer keeps familiar crops. The saving comes from planning: thirsty crops come less often and never back to back, with a lighter crop or a legume in between.
+* In all four regions the AI's score **equals the exact optimum** for that set of crops.
+* The extra crop is chosen on the training climate models only, so the test models stay unseen. In our presentation the Konya example lets the AI add **vetch**, a legume that leaves nitrogen in the soil, instead of barley: vetch → wheat → maize saves 22 % (518 → 402), again equal to the exact optimum.
+* Run it with `python keep_mode.py` (about 5 minutes); results are in `results/keep_mode.csv` and `results/keep/`.
+
+## Impact and path to the field
+
+**Why farm water.** Farming takes about **72 %** of the world's freshwater withdrawals; homes and cities take about 13 % (FAO AQUASTAT 2025). Saving a fifth of farm water would free more water than all homes and cities use. On the Konya Plain, groundwater now falls **4–5 m a year**, against about half a metre a year in the 2000s, and the basin has around 160,000 wells, about 120,000 of them unlicensed (Prof. Fetullah Arık, Konya Technical University, to Reuters, December 2025).
+
+**Who benefits.**
+* **Farmers:** a free crop plan for every field, even one that keeps the crops they want.
+* **Cooperatives and water authorities:** plan every field above one aquifer together and see the expected well water before the season starts.
+* **Communities:** wells last longer and the ground stays stable.
+
+**Why it can work in the real world.**
+* **Free and light:** it runs in any browser, even offline, with no account, sensors or new hardware. The trained policy is a small table, so the plan appears instantly.
+* **Open data that covers the world:** NASA POWER weather and NASA NEX-GDDP-CMIP6 climate models.
+* **Local rules built in:** it starts from Konya's 2027 plan and never suggests a banned move.
+* **Easy to move:** a new region needs three inputs: the crop list with each crop's water need, the local rules and the weather location. The same code already runs five regions.
+
+**How we will prove it and scale it.**
+1. **Measure** the one number our tests report: well water per decare against today's rotation.
+2. **Pilot** with farmers in Çumra, Konya, and check the savings with smart well meters.
+3. **Add income to the goal** (see point 3 in the next section), so the plan that saves water also works for the farmer's budget.
+4. **Scale** from single fields to whole aquifers, with cooperatives and water authorities.
+
 ## Where it falls short, why, and how we'll fix it
 
-We built and tested FieldRota-AI in 48 hours, so we focused on the core: a planner that follows the real rules, learns from real weather and is checked against the exact optimum. Testing it honestly also showed us where it falls short. For each case we know the cause, and the fix is already planned.
+This first version focuses on the core: a planner that follows the real rules, learns from real weather and is checked against the exact optimum. Testing it honestly also showed us where it falls short. For each case we know the cause, and the fix is already planned.
 
 **1. A record-hot summer can still surprise it (2025).**
 * **What we saw:** 2025 had the most days at or above 35 °C in our data. In July alone NASA POWER shows 20 such days (about 13 after the simulator's calibration to FieldRota), against about 4 in an average 2011–2024 July. The agent had planted vetch, which is heat-sensitive, so climate fit fell to 54 and the score to 53.9, its lowest test year.
@@ -170,7 +207,7 @@ We built and tested FieldRota-AI in 48 hours, so we focused on the core: a plann
 
 **4. The results come from a simulator, not yet from fields.**
 * **What we saw:** the simulator has no yields, pests or soil moisture carried between seasons. Its climate data covers cells about 50 km wide, and it uses one emissions scenario (SSP2-4.5).
-* **Why:** a field trial takes whole seasons, so in a weekend a simulator is the only way to test 2015–2060. We built it on measured data: crop water use from TAGEM–DSİ field measurements at Çumra and 41 years of real NASA weather. By design, its average irrigation equals FieldRota's calibrated 2011–2025 values; that period overlaps our 2015–2025 test, so that test checks the agent's choices, not the simulator's calibration.
+* **Why:** a field trial takes whole seasons, so a simulator is the only way to test 2015–2060 today. We built it on measured data: crop water use from TAGEM–DSİ field measurements at Çumra and 41 years of real NASA weather. By design, its average irrigation equals FieldRota's calibrated 2011–2025 values; that period overlaps our 2015–2025 test, so that test checks the agent's choices, not the simulator's calibration.
 * **How we'll fix it:** add yields and soil moisture with a crop model such as FAO's AquaCrop, add a high-emissions scenario from the same NASA dataset, and check the plans against real well records and farmers' past rotations in Çumra.
 
 ![Well water against modelled income for every plan in Konya, 2015–2025](docs/img/chart_tradeoff.png)
@@ -181,6 +218,7 @@ We built and tested FieldRota-AI in 48 hours, so we focused on the core: a plann
 * **Notebook:** open [FieldRota_AI.ipynb in Colab](https://colab.research.google.com/github/Mensar10/fieldrota-ai/blob/main/FieldRota_AI.ipynb) and choose *Run all* (about 5 minutes). It downloads NASA POWER live and falls back to the saved copy in `data/weather/` if the API is down.
 * **Web app:** open the [live app](https://mensar10.github.io/fieldrota-ai/app/), or double-click `app/index.html` (it works offline).
 * **Retrain everything:** `python export_ai.py` (about 25 minutes), then `python tools/build_app.py`.
+* **Keep-my-crops mode:** `python keep_mode.py` (about 5 minutes).
 * **Charts in this README:** `python tools/make_readme_charts.py`.
 
 <details>
@@ -191,12 +229,15 @@ We built and tested FieldRota-AI in 48 hours, so we focused on the core: a plann
 | `fieldrota_ai.py` | simulator, rules, Q-learning, baselines, dynamic-programming optimum, evaluation |
 | `FieldRota_AI.ipynb` | end-to-end notebook with every test and output |
 | `export_ai.py` | trains every region and goal, writes `ai/*.json` and `results/*.csv` |
+| `keep_mode.py` | keep-my-crops mode: the farmer's own crops plus one extra, writes `results/keep_mode.csv` and `results/keep/` |
 | `data/` | FieldRota region data and saved NASA POWER weather |
 | `ai/`, `results/` | trained policies and test results |
+| `presentation/` | the interactive presentation (also online) |
 | `app/` | the FieldRota web app (section 5 = FieldRota-AI) |
 | `tools/` | app build scripts and the README chart script |
 | `docs/img/` | screenshots and charts used here |
 | `DETAILS.md` | the long technical write-up: every region, the full test design and all limits |
+| `LICENSE`, `CITATION.cff` | MIT licence for the code; how to cite this work |
 
 </details>
 
@@ -204,13 +245,17 @@ We built and tested FieldRota-AI in 48 hours, so we focused on the core: a plann
 
 **İstikbalin Cezerileri**, İstanbul Atatürk Science High School, Türkiye
 
-* **Mustafa Ensar Erol**
+* **Mustafa Ensar Erol** ([@Mensar10](https://github.com/Mensar10))
 * **Eymen Efe Çetin**
+
+We had no help from teachers or mentors. The AI tools we used are listed under Sources.
 
 Entry to the **Xylem Global Student Innovation Challenge 2026**, High School Track, Challenge #1: Water Quantity.
 [Video presentation & demo](https://youtu.be/TpGPlDl2FKo) · [Interactive presentation](https://mensar10.github.io/fieldrota-ai/presentation/) · [Live app](https://mensar10.github.io/fieldrota-ai/app/)
 
 ## Sources
+* **Water use by sector:** FAO, *AQUASTAT Water Data Snapshot 2025* (data for 2022): https://doi.org/10.4060/cd7054en
+* **Konya groundwater fall, sinkholes and wells:** Reuters, *Sinkholes in Turkey's agricultural heartland fuel farmers' concerns*, 23 December 2025 (quoting Prof. Fetullah Arık, Konya Technical University), as republished by Al-Monitor: https://www.al-monitor.com/originals/2025/12/sinkholes-turkeys-agricultural-heartland-fuel-farmers-concerns
 * **NASA POWER daily agroclimatology:** https://power.larc.nasa.gov
 * **NASA NEX-GDDP-CMIP6 climate projections, SSP2-4.5, 6 models** (Thrasher et al., 2022): https://www.nccs.nasa.gov/services/data-collections/land-based-products/nex-gddp-cmip6
 * **NASA GRACE groundwater context:** https://grace.jpl.nasa.gov
@@ -233,3 +278,7 @@ Entry to the **Xylem Global Student Innovation Challenge 2026**, High School Tra
 * **Libraries:** NumPy (https://numpy.org), pandas (https://pandas.pydata.org), Matplotlib (https://matplotlib.org), D3 (https://d3js.org), topojson-client (https://github.com/topojson/topojson-client)
 * **AI tools:** Claude by Anthropic (https://claude.ai), used through Claude Code (https://claude.com/claude-code), helped write and debug code and text at our direction. We chose the problem, data, method and tests, checked the results and can explain every part.
 * **No pretrained models or tutorials were used.** The first version of all code, including the FieldRota web app (v1), was built on 14–15 November 2026.
+
+## License
+
+The code is released under the [MIT License](LICENSE). The data in `data/` and the images in the app keep the licences and credits of their sources, listed above. To cite this work, use [CITATION.cff](CITATION.cff) or GitHub's *Cite this repository* button.

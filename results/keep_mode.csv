@@ -1,0 +1,6 @@
+region,goal,kept,extra,extra_chosen_by,ai_score,exact_optimum,today_well_water_m3_da,ai_well_water_m3_da,saving_pct
+konya,water,bugday + dane_misir,arpa,exact optimum on the training climate models,52.8,52.8,518,369,29
+lamancha,water,barley + maize,pea,exact optimum on the training climate models,58.4,58.4,613,402,34
+kansas,water,maize + soybean,canola,exact optimum on the training climate models,28.7,28.7,579,495,15
+california,water,cotton + maize + tomato,chickpea,exact optimum on the training climate models,49.7,49.7,880,575,35
+konya,water,bugday + dane_misir,fig,fixed by hand,53.2,53.2,518,402,22

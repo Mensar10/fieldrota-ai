@@ -1,0 +1,35 @@
+cff-version: 1.2.0
+message: "If you use FieldRota-AI, please cite it as below."
+title: "FieldRota-AI: a reinforcement-learning crop rotation planner that cuts groundwater pumping"
+abstract: >-
+  FieldRota-AI tells a farmer what to plant next, year by year until 2060, so the
+  field pumps less groundwater. A tabular Q-learning agent, trained on NASA POWER
+  weather and NASA NEX-GDDP-CMIP6 climate projections and constrained by Konya's
+  2027 planting rules, is tested on years and climate models it never saw and
+  compared with the exact optimum from dynamic programming. Entry to the Xylem
+  Global Student Innovation Challenge 2026, High School Track, Challenge #1:
+  Water Quantity.
+authors:
+  - family-names: Erol
+    given-names: Mustafa Ensar
+    affiliation: "İstanbul Atatürk Science High School"
+  - family-names: Çetin
+    given-names: Eymen Efe
+    affiliation: "İstanbul Atatürk Science High School"
+type: software
+version: "1.0"
+date-released: "2026-11-24"
+license: MIT
+repository-code: "https://github.com/Mensar10/fieldrota-ai"
+url: "https://mensar10.github.io/fieldrota-ai/app/"
+keywords:
+  - reinforcement learning
+  - Q-learning
+  - crop rotation
+  - groundwater
+  - irrigation
+  - water conservation
+  - climate adaptation
+  - NASA POWER
+  - CMIP6
+  - Konya

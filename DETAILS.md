@@ -75,6 +75,18 @@ The middle columns are the average over 2026–2060 on the two unseen climate mo
 
 **What the AI changes as the climate warms:** in Kansas (balanced goal) it grows winter canola, sunflower and soybean until about 2035. After that it drops sunflower, whose climate fit falls with more hot days, and brings in wheat. That puts it 1.5 points above v1's fixed rotation on the unseen models (0.7 above v1's 2050s pick).
 
+## Keep-my-crops mode (`keep_mode.py`)
+Farmers rarely want to drop the crops they know. In this mode the agent's actions are limited to the farmer's own crops (today's common rotation, minus any crop the local rules ban) plus **one** extra crop. The extra crop is the one whose exact optimum is best on the **training** climate models, so the validation and test models stay unseen. Everything else follows the climate-model recipe above: 3 runs of 100,000 practice episodes on the 3 training models, the best run picked on MRI-ESM2-0, and the final test on GFDL-ESM4 and IPSL-CM6A-LR (40 weather sequences each), compared with the exact optimum for the same crop set. Goal: save water.
+
+| Region | Kept | Added | Repeating plan | AI score = exact optimum | Well water, today → AI (m³/da/yr) |
+|---|---|---|---|---|---|
+| Konya | maize, wheat (sugar beet banned) | barley | barley → wheat → maize | 52.8 = 52.8 | 518 → 369 (−29 %) |
+| La Mancha | maize, barley | pea | pea → maize → barley | 58.4 = 58.4 | 613 → 402 (−34 %) |
+| Kansas | maize, soybean | canola | canola → maize → soybean | 28.7 = 28.7 | 579 → 495 (−15 %) |
+| California | maize, tomato, cotton | chickpea | chickpea → tomato → maize (cotton dropped) | 49.7 = 49.7 | 880 → 575 (−35 %) |
+
+Our presentation uses the Konya run with **vetch** fixed as the extra crop (`python keep_mode.py konya water fig`): vetch → wheat → maize, score 53.2 = exact optimum, 518 → 402 m³/da (−22 %). On the training models, which decide the extra crop, barley scores higher (53.1 vs 52.4); on the unseen test models vetch scores slightly higher (53.2 vs 52.8), while barley needs less well water. Punjab is left out because its common rotation is a single crop pair (rice–wheat) repeated every year. Results: `results/keep_mode.csv` and `results/keep/<region>_<goal>.json` (policy table, plan and the candidate extras with their training-model optimum).
+
 ## Where it falls short (honest notes)
 The README explains, for each point, why it happens and how we plan to fix it.
 * **The AI is not clearly better than FieldRota v1.** In most region/goal pairs the learned policy and v1's exhaustive search land on almost the same plan. The best plan really is close to a fixed rotation, because the climate trend is slow compared with a 3-year cycle. The AI still adds three things:
@@ -99,7 +111,7 @@ The README explains, for each point, why it happens and how we plan to fix it.
 * **Web app:**
   * Double-click `app/index.html`: it works offline and even on its own, because the map libraries and all data are packed inside it. Keep the `app/` folder next to it for the zoomed satellite photos and for clicking fields on them.
   * Or serve the folder: `app/start_local_server.bat` on Windows, or `python -m http.server` inside `app/`.
-  * Or switch on GitHub Pages for this repository and open `https://<user>.github.io/fieldrota-ai/app/`.
+  * Or open the live copy on GitHub Pages: https://mensar10.github.io/fieldrota-ai/app/
 
 ## Files
 | Path | What it is |
@@ -107,10 +119,12 @@ The README explains, for each point, why it happens and how we plan to fix it.
 | `fieldrota_ai.py` | simulator, rules, Q-learning, baselines, dynamic-programming optimum, evaluation |
 | `FieldRota_AI.ipynb` | end-to-end notebook with all tests |
 | `export_ai.py` | trains every region and goal, exports results for the app |
+| `keep_mode.py` | keep-my-crops mode: the farmer's own crops plus one extra crop |
 | `data/regions/*.json` | FieldRota region data (crops, calibrated water and climate numbers, rules, soil scores, CMIP6 runs) |
 | `data/weather/*.csv.gz` | saved NASA POWER daily weather, 1985–2025 |
 | `ai/*.json`, `results/*.csv` | trained policies and test results |
 | `app/` | FieldRota web app with the new AI section (section 5); `index.html` carries its own data, `app/img_js/` serves the satellite photos offline |
+| `presentation/` | interactive presentation (https://mensar10.github.io/fieldrota-ai/presentation/) |
 | `tools/` | `patch_app.py` adds section 5 to the app (`index.src.html`); `build_app.py` packs data and libraries into `app/index.html` |
 
 ## Credits
@@ -126,5 +140,5 @@ The README explains, for each point, why it happens and how we plan to fix it.
 * **Full source list with links:** see the Sources section of README.md (data, imagery, map outlines, fonts, prices).
 * **Related work:** Turchetta et al. (2022), *Learning Long-Term Crop Management Strategies with CyclesGym*, NeurIPS Datasets and Benchmarks.
 * **AI tools:** Claude (Anthropic), used through Claude Code, helped write and debug code and text at our direction. We chose the problem, data, method and tests, checked the results and can explain every part.
-* **Timeline note:** the first version of all code, including the FieldRota web app (v1), was written on 14–15 November 2026.
+* **Timeline note:** the first version of all code, including the FieldRota web app (v1), was built on 14–15 November 2026.
 
